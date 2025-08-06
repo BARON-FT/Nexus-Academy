@@ -3,7 +3,7 @@
 import os
 import time
 from flask import Flask, request, render_template, redirect, url_for, abort
-from supabase_client import create_client, Client # type: ignore
+from supabase import create_client, Client # type: ignore
 from dotenv import load_dotenv # type: ignore
 
 load_dotenv() # Charge les variables d'environnement du fichier .env
@@ -103,4 +103,5 @@ def admin():
         return "<h1>Erreur de connexion à la base de données.</h1>"
 
 if __name__ == '__main__':
+
     app.run(debug=True)

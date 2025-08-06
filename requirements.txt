@@ -1,4 +1,0 @@
-Flask
-supabase-client
-python-dotenv
-gunicorn

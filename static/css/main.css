@@ -1,0 +1,170 @@
+:root {
+    --bg-dark: #0a0c10;
+    --bg-medium: #111827;
+    --bg-light: #1f2937;
+    --border-color: #374151;
+    --text-primary: #f9fafb;
+    --text-secondary: #9ca3af;
+    --brand-primary: #3b82f6;
+    --brand-secondary: #10b981;
+    --success: #22c55e;
+    --error: #ef4444;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background-color: var(--bg-dark);
+    color: var(--text-primary);
+    line-height: 1.6;
+}
+
+.container {
+    width: 100%;
+    max-width: 960px;
+    margin-inline: auto;
+    padding: 1rem;
+}
+
+/* Header */
+.site-header {
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--border-color);
+    background: rgba(10, 12, 16, 0.7);
+    backdrop-filter: blur(10px);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.logo { height: 40px; }
+.nav a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    margin-left: 1.5rem;
+    font-weight: 600;
+    transition: color 0.2s ease;
+}
+.nav a:hover, .nav a.active { color: var(--text-primary); }
+
+/* Main Content */
+main { padding: 2rem 0; }
+
+.hero {
+    text-align: center;
+    padding: 4rem 1rem;
+}
+.hero h1 {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(45deg, var(--brand-primary), var(--brand-secondary));
+    -webkit-background-clip-color: text;
+    -webkit-text-fill-color: transparent;
+}
+.hero p {
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+    margin-bottom: 2rem;
+}
+
+/* Form */
+.form-card {
+    background: var(--bg-medium);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 2rem;
+    max-width: 600px;
+    margin: 2rem auto;
+}
+.form-group { margin-bottom: 1.25rem; }
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+.form-control {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    background: var(--bg-dark);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    color: var(--text-primary);
+    font-size: 1rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+.form-control:focus {
+    outline: none;
+    border-color: var(--brand-primary);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+}
+.file-input-label {
+    display: block;
+    padding: 0.75rem 1rem;
+    background: var(--bg-light);
+    border: 1px dashed var(--border-color);
+    border-radius: 8px;
+    cursor: pointer;
+    text-align: center;
+    color: var(--text-secondary);
+    transition: background-color 0.2s, border-color 0.2s;
+}
+.file-input-label:hover {
+    background-color: var(--border-color);
+    border-color: var(--brand-primary);
+}
+input[type="file"] { display: none; }
+
+/* Button */
+.btn {
+    display: block;
+    width: 100%;
+    padding: 0.8rem 1rem;
+    border: none;
+    border-radius: 8px;
+    background: linear-gradient(45deg, var(--brand-primary), var(--brand-secondary));
+    color: var(--text-primary);
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.2s, filter 0.2s;
+}
+.btn:hover { filter: brightness(1.1); }
+.btn:active { transform: scale(0.98); }
+
+/* Alerts */
+.alert {
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    border-radius: 8px;
+    font-weight: 600;
+    display: none; /* Caché par défaut, affiché par JS */
+}
+.alert.success { background-color: rgba(34, 197, 94, 0.1); border: 1px solid var(--success); color: var(--success); }
+.alert.error { background-color: rgba(239, 68, 68, 0.1); border: 1px solid var(--error); color: var(--error); }
+
+/* Admin Table */
+.table-container {
+    background: var(--bg-medium);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    overflow-x: auto;
+}
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+.table th, .table td {
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+}
+.table th { font-weight: 700; color: var(--text-secondary); }
+.table tbody tr:last-child td { border-bottom: none; }
+.table a { font-weight: 600; }

@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Admin - Inscriptions</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f4f7f6;
+            color: #333;
+            margin: 0;
+            padding: 2rem;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #0D1B2A;
+            margin-bottom: 1rem;
+        }
+        #export-btn {
+            display: inline-block;
+            margin-bottom: 2rem;
+            padding: 0.7rem 1.5rem;
+            background-color: #0077B6;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+        }
+        #export-btn:hover {
+            background-color: #005f8e;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+        th, td {
+            padding: 0.8rem 1rem;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+        th {
+            background-color: #0D1B2A;
+            color: white;
+            font-weight: 600;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            font-size: 1.2rem;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Liste des Inscrits</h1>
+        <p id="total-inscrits">Total : 0</p>
+        <button id="export-btn">Exporter en CSV</button>
+        <table>
+            <thead>
+                <tr>
+                    <th>Date d'inscription</th>
+                    <th>Nom</th>
+                    <th>Prénom</th>
+                    <th>Téléphone</th>
+                    <th>ID Baron Enterprise</th>
+                </tr>
+            </thead>
+            <tbody id="inscrits-table-body">
+                <!-- Les données seront insérées ici par JavaScript -->
+            </tbody>
+        </table>
+        <div id="loading-state" class="loading">Chargement des données...</div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const tableBody = document.getElementById('inscrits-table-body');
+            const loadingState = document.getElementById('loading-state');
+            const exportBtn = document.getElementById('export-btn');
+            const totalInscrits = document.getElementById('total-inscrits');
+            let inscritsData = []; // Pour stocker les données pour l'export
+
+            // Fonction pour charger les données
+            async function fetchInscrits() {
+                try {
+                    const response = await fetch('/api/inscrits');
+                    if (!response.ok) {
+                        throw new Error(`Erreur HTTP: ${response.status}`);
+                    }
+                    inscritsData = await response.json();
+                    displayInscrits(inscritsData);
+                } catch (error) {
+                    loadingState.textContent = `Erreur de chargement des données: ${error.message}`;
+                    console.error(error);
+                }
+            }
+
+            // Fonction pour afficher les données dans le tableau
+            function displayInscrits(data) {
+                tableBody.innerHTML = ''; // Vider le tableau
+                if (data.length === 0) {
+                    loadingState.textContent = 'Aucun inscrit pour le moment.';
+                    return;
+                }
+                loadingState.style.display = 'none';
+                totalInscrits.textContent = `Total : ${data.length}`;
+
+                data.forEach(inscrit => {
+                    const row = document.createElement('tr');
+                    const formattedDate = new Date(inscrit.created_at).toLocaleString('fr-FR');
+                    
+                    row.innerHTML = `
+                        <td>${formattedDate}</td>
+                        <td>${inscrit.nom}</td>
+                        <td>${inscrit.prenom}</td>
+                        <td>${inscrit.whatsapp}</td>
+                        <td>${inscrit.id_be || 'Non'}</td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            }
+
+            // Fonction pour exporter en CSV
+            function exportToCsv() {
+                if (inscritsData.length === 0) {
+                    alert("Aucune donnée à exporter.");
+                    return;
+                }
+                const headers = ['DateInscription', 'Nom', 'Prenom', 'WhatsApp', 'ID_BE'];
+                const csvRows = [headers.join(',')];
+
+                inscritsData.forEach(row => {
+                    const values = [
+                        new Date(row.created_at).toISOString(),
+                        `"${row.nom}"`,
+                        `"${row.prenom}"`,
+                        `"${row.whatsapp}"`,
+                        `"${row.id_be || ''}"`
+                    ];
+                    csvRows.push(values.join(','));
+                });
+
+                const csvString = csvRows.join('\n');
+                const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+                
+                const link = document.createElement('a');
+                const url = URL.createObjectURL(blob);
+                link.setAttribute('href', url);
+                link.setAttribute('download', 'inscriptions_mlm_school.csv');
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+
+            exportBtn.addEventListener('click', exportToCsv);
+
+            // Charger les données au démarrage
+            fetchInscrits();
+        });
+    </script>
+
+</body>
+</html>

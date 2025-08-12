@@ -11,7 +11,7 @@
             background-color: #f4f7f6;
             color: #333;
             margin: 0;
-            padding: 2rem;
+            padding: 1rem; /* MODIFICATION : Moins de padding sur mobile */
         }
         .container {
             max-width: 1200px;
@@ -64,6 +64,53 @@
             padding: 2rem;
             font-size: 1.2rem;
         }
+
+        /* --- MODIFICATION : Styles pour la responsivité du tableau --- */
+        @media screen and (max-width: 768px) {
+            body {
+                padding: 0.5rem;
+            }
+            .container {
+                padding: 1rem;
+            }
+            table {
+                border: 0;
+            }
+            table thead {
+                display: none; /* On cache les en-têtes */
+            }
+            table tr {
+                display: block;
+                margin-bottom: 1rem;
+                border: 1px solid #ddd;
+                border-radius: 5px;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            }
+            table td {
+                display: block;
+                text-align: right; /* Aligne la valeur à droite */
+                font-size: 0.9rem;
+                border: none;
+                border-bottom: 1px solid #eee;
+                position: relative;
+                padding-left: 50%; /* Laisse de la place pour le label */
+            }
+            table td:last-child {
+                border-bottom: 0;
+            }
+            table td::before {
+                /* Crée un pseudo-élément pour afficher le label */
+                content: attr(data-label);
+                position: absolute;
+                left: 10px;
+                width: 45%;
+                padding-right: 10px;
+                white-space: nowrap;
+                text-align: left;
+                font-weight: bold;
+                color: #0D1B2A;
+            }
+        }
     </style>
 </head>
 <body>
@@ -95,9 +142,8 @@
             const loadingState = document.getElementById('loading-state');
             const exportBtn = document.getElementById('export-btn');
             const totalInscrits = document.getElementById('total-inscrits');
-            let inscritsData = []; // Pour stocker les données pour l'export
+            let inscritsData = [];
 
-            // Fonction pour charger les données
             async function fetchInscrits() {
                 try {
                     const response = await fetch('/api/inscrits');
@@ -112,9 +158,8 @@
                 }
             }
 
-            // Fonction pour afficher les données dans le tableau
             function displayInscrits(data) {
-                tableBody.innerHTML = ''; // Vider le tableau
+                tableBody.innerHTML = '';
                 if (data.length === 0) {
                     loadingState.textContent = 'Aucun inscrit pour le moment.';
                     return;
@@ -126,18 +171,18 @@
                     const row = document.createElement('tr');
                     const formattedDate = new Date(inscrit.created_at).toLocaleString('fr-FR');
                     
+                    // --- MODIFICATION : Ajout des attributs data-label pour la responsivité ---
                     row.innerHTML = `
-                        <td>${formattedDate}</td>
-                        <td>${inscrit.nom}</td>
-                        <td>${inscrit.prenom}</td>
-                        <td>${inscrit.whatsapp}</td>
-                        <td>${inscrit.id_be || 'Non'}</td>
+                        <td data-label="Date">${formattedDate}</td>
+                        <td data-label="Nom">${inscrit.nom}</td>
+                        <td data-label="Prénom">${inscrit.prenom}</td>
+                        <td data-label="Téléphone">${inscrit.whatsapp}</td>
+                        <td data-label="ID BE">${inscrit.id_be || 'Non'}</td>
                     `;
                     tableBody.appendChild(row);
                 });
             }
 
-            // Fonction pour exporter en CSV
             function exportToCsv() {
                 if (inscritsData.length === 0) {
                     alert("Aucune donnée à exporter.");
@@ -171,8 +216,6 @@
             }
 
             exportBtn.addEventListener('click', exportToCsv);
-
-            // Charger les données au démarrage
             fetchInscrits();
         });
     </script>

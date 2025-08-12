@@ -49,40 +49,27 @@
         /* --- Header --- */
         .header {
             text-align: center;
-            padding: 2rem 0;
+            padding: 1.5rem 0; /* MODIFICATION : padding réduit pour un meilleur équilibre */
             border-bottom: 1px solid var(--color-gray-text);
             background-color: var(--color-dark-blue);
         }
 
-        .logos {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 2rem;
-            margin-bottom: 2rem;
-        }
-
-        .logo-img {
-             height: 100px;
+        .header .logo-img { /* MODIFICATION : Style spécifique pour le logo du header */
+             height: 80px;
              width: auto;
-        }
-
-        .logo-placeholder {
-            height: 50px;
-            width: 150px;
-            background-color: var(--color-dark-blue);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.8rem;
-            color: var(--color-gray-text);
-            border-radius: 8px;
         }
 
         /* --- Section Présentation --- */
         #presentation {
             text-align: center;
             padding: 4rem 0;
+        }
+        
+        /* MODIFICATION : Style pour le logo principal dans le corps de la page */
+        .main-logo {
+            height: 100px;
+            width: auto;
+            margin-bottom: 2.5rem; /* Espace entre le logo et le titre */
         }
 
         #presentation h1 {
@@ -108,13 +95,13 @@
         }
 
         .flyer-img {
-    width: 100%;
-    max-width: 500px;
-    height: auto;
-    margin: 2rem auto 0;
-    border-radius: 12px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-}
+            width: 100%;
+            max-width: 500px;
+            height: auto;
+            margin: 2rem auto 0;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
 
         /* --- Section Pourquoi Participer --- */
         #pourquoi {
@@ -275,24 +262,22 @@
             .benefits-grid {
                 grid-template-columns: 1fr;
             }
-            .flyer-placeholder {
-                height: 350px;
-            }
         }
     </style>
 </head>
 <body>
 
     <header class="header">
-        <div class="logos">
-    <img src="{{ url_for('static', filename='images/logo-mlm-school.png') }}" alt="Logo MLM School" class="logo-img">
-    <img src="{{ url_for('static', filename='images/logo-nexus-academy.png') }}" alt="Logo Nexus Academy" class="logo-img">
-</div>
+        <!-- MODIFICATION : Seul le logo Nexus Academy reste ici, centré -->
+        <img src="{{ url_for('static', filename='images/logo-nexus-academy.png') }}" alt="Logo Nexus Academy" class="logo-img">
     </header>
 
     <main>
         <section id="presentation">
             <div class="container">
+                <!-- MODIFICATION : Le logo MLM School est déplacé ici -->
+                <img src="{{ url_for('static', filename='images/logo-mlm-school.png') }}" alt="Logo MLM School" class="main-logo">
+                
                 <h1>Business Discovery</h1>
                 <p class="subtitle">Devenir un leader rentable avec 1 produit par jour</p>
                 <p class="details">
@@ -303,7 +288,7 @@
                 <div class="event-info">
                     <strong>Date :</strong> À venir | <strong>Lieu :</strong> À confirmer | <strong>Participation :</strong> 5.000 F
                 </div>
-<img src="{{ url_for('static', filename='images/flyer.jpeg') }}" alt="Flyer Business Discovery" class="flyer-img">
+                <img src="{{ url_for('static', filename='images/flyer.jpeg') }}" alt="Flyer Business Discovery" class="flyer-img">
             </div>
         </section>
 
@@ -372,10 +357,11 @@
     </main>
 
     <footer class="footer">
-        <p>&copy; 2025 MLM School & Nexus Academy. </br>Tous droits réservés.</p>
+        <p>&copy; 2025 MLM School & Nexus Academy. <br>Tous droits réservés.</p>
     </footer>
 
     <script>
+        // Le JavaScript reste identique, pas de modifications nécessaires ici.
         document.addEventListener('DOMContentLoaded', function() {
             const form = document.getElementById('inscription-form');
             const idBeContainer = document.getElementById('id-be-container');
@@ -383,7 +369,6 @@
             const radioButtons = document.querySelectorAll('input[name="has_id_be"]');
             const confirmationMessage = document.getElementById('confirmation-message');
 
-            // Afficher/cacher le champ de l'identifiant BE
             radioButtons.forEach(radio => {
                 radio.addEventListener('change', function() {
                     if (this.value === 'oui') {
@@ -392,14 +377,13 @@
                     } else {
                         idBeContainer.style.display = 'none';
                         idBeInput.required = false;
-                        idBeInput.value = ''; // Vider le champ si on sélectionne "Non"
+                        idBeInput.value = '';
                     }
                 });
             });
 
-            // Gérer la soumission du formulaire
             form.addEventListener('submit', function(event) {
-                event.preventDefault(); // Empêche le rechargement de la page
+                event.preventDefault();
 
                 const formData = new FormData(form);
                 const data = {
@@ -407,16 +391,10 @@
                     prenom: formData.get('prenom'),
                     whatsapp: formData.get('whatsapp'),
                     has_id_be: formData.get('has_id_be'),
-                    id_be: formData.get('id_be') || null // Envoyer null si vide
+                    id_be: formData.get('id_be') || null
                 };
                 
-                // --- C'est ici que nous enverrons les données au backend ---
-                // Pour l'instant, nous simulons une réussite
-                console.log('Données à envoyer:', data);
-
-                // Simulation d'un appel API
-                // Remplacer cette partie par le vrai appel fetch vers votre API Flask
-                fetch('/api/register', { // L'URL de votre future API
+                fetch('/api/register', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -425,14 +403,12 @@
                 })
                 .then(response => {
                     if (!response.ok) {
-                        // Gérer les erreurs du serveur
                         throw new Error('Erreur réseau ou serveur');
                     }
                     return response.json();
                 })
                 .then(result => {
                     console.log('Succès:', result);
-                    // Afficher le message de confirmation
                     form.style.display = 'none';
                     confirmationMessage.style.display = 'block';
                 })

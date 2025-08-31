@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Admin - Inscriptions</title>
+    <style>
+        /* ... (le CSS reste le même que la version responsive précédente) ... */
+        /* NOUVEAUTÉ : Style pour le sélecteur de cohorte */
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .cohort-selector {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        #cohort-select {
+            padding: 0.5rem;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Liste des Inscrits</h1>
+        
+        <!-- NOUVEAUTÉ : Contrôles pour la cohorte et l'export -->
+        <div class="controls">
+            <div class="cohort-selector">
+                <label for="cohort-select">Session (Cohorte):</label>
+                <select id="cohort-select"></select>
+            </div>
+            <button id="export-btn">Exporter en Excel</button>
+        </div>
+
+        <p id="total-inscrits">Total : 0</p>
+        <table>
+            <!-- ... (structure du tableau inchangée) ... -->
+        </table>
+        <div id="loading-state" class="loading">Chargement des cohortes...</div>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const tableBody = document.getElementById('inscrits-table-body');
+        const loadingState = document.getElementById('loading-state');
+        const exportBtn = document.getElementById('export-btn');
+        const totalInscrits = document.getElementById('total-inscrits');
+        const cohortSelect = document.getElementById('cohort-select');
+
+        // --- MODIFICATION : Logique complète du dashboard ---
+
+        // 1. Charger les cohortes disponibles au démarrage
+        async function fetchCohortes() {
+            try {
+                const response = await fetch('/api/cohortes');
+                const cohortes = await response.json();
+                
+                if (cohortes.length > 0) {
+                    cohortSelect.innerHTML = cohortes.map(c => `<option value="${c}">${c}</option>`).join('');
+                    // Charger les inscrits de la première cohorte par défaut
+                    fetchInscrits(cohortes[0]);
+                } else {
+                    loadingState.textContent = 'Aucune cohorte trouvée.';
+                }
+            } catch (error) {
+                loadingState.textContent = 'Erreur de chargement des cohortes.';
+            }
+        }
+
+        // 2. Charger les inscrits pour une cohorte donnée
+        async function fetchInscrits(cohorte) {
+            if (!cohorte) return;
+            loadingState.style.display = 'block';
+            loadingState.textContent = `Chargement de la cohorte "${cohorte}"...`;
+            tableBody.innerHTML = '';
+            
+            try {
+                const response = await fetch(`/api/inscrits?cohorte=${encodeURIComponent(cohorte)}`);
+                const data = await response.json();
+                displayInscrits(data);
+            } catch (error) {
+                loadingState.textContent = `Erreur de chargement des données.`;
+            }
+        }
+
+        // 3. Afficher les inscrits dans le tableau
+        function displayInscrits(data) {
+            tableBody.innerHTML = '';
+            totalInscrits.textContent = `Total : ${data.length}`;
+            
+            if (data.length === 0) {
+                loadingState.textContent = 'Aucun inscrit pour cette cohorte.';
+                return;
+            }
+            loadingState.style.display = 'none';
+
+            data.forEach(inscrit => {
+                const row = document.createElement('tr');
+                const formattedDate = new Date(inscrit.created_at).toLocaleString('fr-FR');
+                row.innerHTML = `
+                    <td data-label="Date">${formattedDate}</td>
+                    <td data-label="Nom">${inscrit.nom}</td>
+                    <td data-label="Prénom">${inscrit.prenom}</td>
+                    <td data-label="Téléphone">${inscrit.whatsapp}</td>
+                    <td data-label="ID BE">${inscrit.id_be || 'Non'}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        // 4. Gérer l'export Excel
+        function exportToExcel() {
+            const selectedCohort = cohortSelect.value;
+            if (!selectedCohort) {
+                alert("Veuillez sélectionner une cohorte à exporter.");
+                return;
+            }
+            // On ouvre simplement l'URL de l'API d'export, le navigateur gérera le téléchargement
+            window.location.href = `/api/export/excel?cohorte=${encodeURIComponent(selectedCohort)}`;
+        }
+
+        // Écouteurs d'événements
+        cohortSelect.addEventListener('change', () => fetchInscrits(cohortSelect.value));
+        exportBtn.addEventListener('click', exportToExcel);
+
+        // Démarrage
+        fetchCohortes();
+    });
+    </script>
+</body>
+</html>

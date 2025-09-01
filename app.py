@@ -10,7 +10,7 @@ load_dotenv()
 
 # --- MODIFICATION : Connexion à la base de données Neon ---
 app = Flask(__name__, template_folder='templates', static_folder='static')
-DATABASE_URL = os.environ.get("psql 'postgresql://neondb_owner:npg_lzUnMGp7xi2C@ep-calm-shadow-a2yk1sch-pooler.eu-central-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require'") # L'URL de connexion Neon
+DATABASE_URL = os.environ.get("DATABASE_URL") # L'URL de connexion Neon
 if not DATABASE_URL:
     raise RuntimeError("DATABASE_URL n'est pas configurée !")
 engine = create_engine(DATABASE_URL)
@@ -128,4 +128,5 @@ def admin_dashboard():
     return render_template('admin.html')
 
 if __name__ == '__main__':
+
     app.run(debug=True, port=5001)
